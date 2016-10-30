@@ -338,6 +338,101 @@ public class Solution {
         return num;
     }
 
+    public boolean containsDuplicate(int[] nums) {
+        HashSet<Integer> hs = new HashSet<Integer>(nums.length * 2);
+        for(int i : nums) {
+            if(hs.contains(i)) {
+                return true;
+            } else {
+                hs.add(i);
+            }
+        }
+        return false;
+    }
+
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode previous = head, cur = head.next, next;
+        head.next = null;
+        while(cur != null) {
+            next = cur.next;
+            cur.next = previous;
+            previous = cur;
+            cur = next;
+        }
+        return previous;
+    }
+
+    public String toHex(int num) {
+        if (num == 0) return "0";
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < 8; i++) {
+            long v = (num >> 28) & 0xf;
+            num = num << 4;
+
+            if (v >= 10) {
+                sb.append((char)(v + 87));
+            } else if(v > 0) {
+                sb.append((char)(v + 48));
+            } else {
+                if (sb.length() > 0) sb.append('0');
+            }
+        }
+        return sb.toString();
+    }
+
+    public boolean isPowerOfThree(int n) {
+        //参考的答案
+        return ( n>0 &&  1162261467%n==0);
+    }
+
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null) return null;
+        ListNode node = head;
+        while(node.next != null) {
+            if(node.val == node.next.val) {
+                node.next = node.next.next;
+            } else {
+                node = node.next;
+            }
+        }
+        return head;
+    }
+
+    public int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        int l = prices[0] ,h = prices[0], r = 0;
+        int sl = l, sh = 0, sr = 0;
+        for (int i: prices) {
+            if (i > h) {
+                h = i;
+                r = h - l;
+            } else if (i < l && i < sl) {
+                sl = sh = i;
+                sr = 0;
+            }
+            if (i > sh) {
+                sh = i;
+                sr = sh - sl;
+            }
+            if (sr > r) {
+                l = sl;
+                h = sh;
+                r = sr;
+            }
+        }
+        return r;
+    }
+
+    public int hammingWeight(int n) {
+        int r = 0;
+        for(int i = 0; i < 32; i++) {
+            r += n & 1;
+            n = n >> 1;
+        }
+        return r;
+    }
+
 //    public int[] intersection(int[] nums1, int[] nums2) {
 //        Set<Integer> set = new HashSet<>(nums1.length);
 //        for(int i : nums1) {
