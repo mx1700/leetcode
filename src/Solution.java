@@ -339,7 +339,7 @@ public class Solution {
     }
 
     public boolean containsDuplicate(int[] nums) {
-        HashSet<Integer> hs = new HashSet<Integer>(nums.length * 2);
+        HashSet<Integer> hs = new HashSet<>(nums.length * 2);
         for(int i : nums) {
             if(hs.contains(i)) {
                 return true;
@@ -367,7 +367,7 @@ public class Solution {
         if (num == 0) return "0";
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < 8; i++) {
-            long v = (num >> 28) & 0xf;
+            long v = (num >> 28);
             num = num << 4;
 
             if (v >= 10) {
@@ -433,18 +433,106 @@ public class Solution {
         return r;
     }
 
-//    public int[] intersection(int[] nums1, int[] nums2) {
-//        Set<Integer> set = new HashSet<>(nums1.length);
-//        for(int i : nums1) {
-//            set.add(i);
-//        }
-//        Set<Integer> rSet = new HashSet<>();
-//        for (int i : nums2) {
-//            if (set.contains(i)) {
-//                rSet.add(i);
-//            }
-//        }
-//        rSet.toArray();
-//        //return rSet;
-//    }
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        if (l1.val > l2.val) {
+            ListNode a = l1;
+            l1 = l2;
+            l2 = a;
+        }
+        ListNode r = l1;
+        while(l2 != null) {
+            if (l1.next == null || l2.val < l1.next.val) {
+                ListNode next = l1.next;
+                ListNode insert = l2;
+                ListNode next_l2 = l2.next;
+                l1.next = insert;
+                insert.next = next;
+                l1 = insert;
+                l2 = next_l2;
+            } else {
+                l1 = l1.next;
+            }
+        }
+        return r;
+    }
+
+    public boolean isPowerOfFour(int num) {
+        return num > 0 && 1073741824 % Math.sqrt(num) == 0;
+    }
+
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        //性能太差，可以用二位数组加循环实现
+        if (root == null) return new LinkedList<>();
+        List<List<Integer>> left = levelOrderBottom(root.left),
+                right = levelOrderBottom(root.right);
+        List<List<Integer>> r = new LinkedList<>();
+        if (left != null && right != null) {
+            //两个数组合并入 r
+            int lLen = left.size(), rLen = right.size();
+            boolean leftLonger = lLen >= rLen;
+            for(int il = leftLonger ? 0 : lLen - rLen, ir = leftLonger ? rLen - lLen : 0; il < lLen || ir < rLen; il++, ir++) {
+                List<Integer> lList = il >= 0 && il < lLen ? left.get(il) : null;
+                List<Integer> rList = ir >= 0 && ir < rLen ? right.get(ir) : null;
+                if (lList != null && rList != null) {
+                    lList.addAll(rList);
+                    r.add(lList);
+                } else if (lList != null) {
+                    r.add(lList);
+                } else if (rList != null) {
+                    r.add(rList);
+                }
+            }
+        } else if(left != null) {
+            r.addAll(left);
+        } else if (right != null) {
+            r.addAll(right);
+        }
+        List<Integer> self = new LinkedList<>();
+        self.add(root.val);
+        r.add(self);
+        return r;
+    }
+
+    public int treeDeep(TreeNode node, List<List<Integer>> list) {
+        if (node == null) return 0;
+        int deep = 0;
+        if (node.left == null && node.right == null) {
+            deep = 1;
+        } else {
+            int deepLeft = treeDeep(node.left, list);
+            int deepRight = treeDeep(node.right, list);
+            deep = Math.max(deepLeft, deepRight) + 1;
+        }
+
+        return deep;
+    }
+
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>(nums1.length);
+        for(int i : nums1) {
+            set.add(i);
+        }
+        Set<Integer> rSet = new HashSet<>();
+        for (int i : nums2) {
+            if (set.contains(i)) {
+                rSet.add(i);
+            }
+        }
+        int[] r = new int[rSet.size()];
+        int i = 0;
+        for(Integer v : rSet) {
+            r[i] = v;
+            i++;
+        }
+        return r;
+    }
+
+    public int climbStairs(int n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        return climbStairs(n - 1) + climbStairs(n - 2);
+    }
 }
