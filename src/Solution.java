@@ -459,11 +459,12 @@ public class Solution {
     }
 
     public boolean isPowerOfFour(int num) {
+        //2^31 = 1073741824
         return num > 0 && 1073741824 % Math.sqrt(num) == 0;
     }
 
     public List<List<Integer>> levelOrderBottom(TreeNode root) {
-        //性能太差，可以用二位数组加循环实现
+        //性能太差，可以用二维数组加循环实现
         if (root == null) return new LinkedList<>();
         List<List<Integer>> left = levelOrderBottom(root.left),
                 right = levelOrderBottom(root.right);
@@ -495,14 +496,14 @@ public class Solution {
         return r;
     }
 
-    public int treeDeep(TreeNode node, List<List<Integer>> list) {
+    public int treeDeep(TreeNode node) {
         if (node == null) return 0;
         int deep = 0;
         if (node.left == null && node.right == null) {
             deep = 1;
         } else {
-            int deepLeft = treeDeep(node.left, list);
-            int deepRight = treeDeep(node.right, list);
+            int deepLeft = treeDeep(node.left);
+            int deepRight = treeDeep(node.right);
             deep = Math.max(deepLeft, deepRight) + 1;
         }
 
@@ -529,10 +530,239 @@ public class Solution {
         return r;
     }
 
+    static  int[] result = new int[100];
     public int climbStairs(int n) {
         if (n == 0) return 0;
         if (n == 1) return 1;
         if (n == 2) return 2;
-        return climbStairs(n - 1) + climbStairs(n - 2);
+        if (result[n] != 0) {
+            return result[n];
+        }
+        int r = climbStairs(n - 1) + climbStairs(n - 2);
+        if (r > 2) {
+            result[n] = r;
+        }
+        return r;
     }
+
+    public boolean isPowerOfTwo(int n) {
+        return n > 0 && Math.pow(2, 31) % n == 0;
+    }
+
+    public int arrangeCoins(int n) {
+        //计算 1-x 的和等于n，求解 x
+        return (int)((Math.sqrt(1 + 8 * n) - 1) / 2);
+    }
+
+    public List<String> readBinaryWatch(int num) {
+        List<String> r = new ArrayList<>();
+        for(int i = 0; i < 10 - num; i++) {
+            for(int j = i; j < num; j++) {
+                for(int k = j; k < 10; k++) {
+                    System.out.println(i + "-" + j + "-" + k);
+                }
+            }
+        }
+
+//        for(int n = 0; n < num; n++) {
+//            for(int i = 0; i < 10 && i > 10 - num; i++) {
+//                for(int j = i + 1; j < 10; j++) {
+//
+//                }
+//            }
+//        }
+
+        return r;
+    }
+
+    public int[] intersect(int[] nums1, int[] nums2) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i : nums1) {
+            if (map.containsKey(i)) {
+                map.put(i, map.get(i) + 1);
+            } else {
+                map.put(i, 1);
+            }
+        }
+        List<Integer> list = new ArrayList<>();
+        for(int i : nums2) {
+            if (map.containsKey(i)) {
+                list.add(i);
+                int count = map.get(i) - 1;
+                if (count > 0) {
+                    map.put(i, count);
+                } else {
+                    map.remove(i);
+                }
+            }
+        }
+        int[] r = new int[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            r[i] = list.get(i);
+        }
+        return r;
+    }
+
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode r = head.next;
+        head.next = r.next;
+        r.next = head;
+
+        head = r.next;
+        while(head.next != null && head.next.next != null) {
+            ListNode item1 = head.next, item2 = head.next.next;
+            ListNode next = item2.next;
+            head.next = item2;
+            item2.next = item1;
+            item1.next = next;
+            head = item1;
+        }
+        return r;
+    }
+
+    public String reverseVowels(String s) {
+        char[] chars = s.toCharArray();
+        int i = 0; int j = chars.length - 1;
+        while ( i < j) {
+            char l = chars[i], r = chars[j];
+            boolean lv = isVowels(l), rv = isVowels(r);
+            if (lv && rv) {
+                chars[i] = r;
+                chars[j] = l;
+                i++; j--;
+            } else if(lv) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+        return new String(chars);
+    }
+
+    private boolean isVowels(char v) {
+        switch (v) {
+            case 'a':
+            case 'e':
+            case 'i':
+            case 'o':
+            case 'u':
+            case 'A':
+            case 'E':
+            case 'I':
+            case 'O':
+            case 'U':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) return true;
+        return _isSymmetric(root.left, root.right);
+    }
+
+    private boolean _isSymmetric(TreeNode left, TreeNode right) {
+        if (left == right) return true;
+        if (left == null || right == null) return false;
+        if (left.val != right.val) return false;
+        return _isSymmetric(left.left, right.right) && _isSymmetric(left.right, right.left);
+    }
+
+    public boolean hasCycle(ListNode head) {
+        //反转链表，如果头等于尾，则有环
+        if (head == null || head.next == null) return false;
+        ListNode pre = null, cur = head;
+        while(cur != null) {
+            ListNode newPre = cur;
+            ListNode newCur = cur.next;
+            cur.next = pre;
+            pre = newPre;
+            cur = newCur;
+        }
+        return pre != head;
+    }
+
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> r = new LinkedList<>();
+        if (numRows == 0) return r;
+        List<Integer> r1 = new LinkedList<>();
+        r1.add(1);
+        r.add(r1);
+        for(int i = 1; i < numRows; i++) {
+            List<Integer> row = new LinkedList<>();
+            List<Integer> pre = r.get(i - 1);
+
+            row.add(1);
+            for(int j = 0; j <= pre.size() - 2; j++) {
+                row.add(pre.get(j) + pre.get(j + 1));
+            }
+            row.add(1);
+
+            r.add(row);
+        }
+
+        return r;
+    }
+
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) return new LinkedList<>();
+        List<List<Integer>> left = levelOrder(root.left),
+                right = levelOrder(root.right);
+        List<List<Integer>> r = new LinkedList<>();
+        List<Integer> self = new LinkedList<>();
+        self.add(root.val);
+        r.add(self);
+        if (left != null && right != null) {
+            //两个数组合并入 r
+            int lLen = left.size(), rLen = right.size();
+            for(int il = 0, ir = 0; il < lLen || ir < rLen; il++, ir++) {
+                List<Integer> lList = il < lLen ? left.get(il) : null;
+                List<Integer> rList = ir < rLen ? right.get(ir) : null;
+                if (lList != null && rList != null) {
+                    lList.addAll(rList);
+                    r.add(lList);
+                } else if (lList != null) {
+                    r.add(lList);
+                } else if (rList != null) {
+                    r.add(rList);
+                }
+            }
+        } else if(left != null) {
+            r.addAll(left);
+        } else if (right != null) {
+            r.addAll(right);
+        }
+        return r;
+    }
+
+//    public boolean isBalanced(TreeNode root) {
+//
+//    }
+
+//    public int removeElement(int[] nums, int val) {
+//        int i = 0, j = nums.length - 1;
+//        int r = 0;
+//        while(i < j) {
+//            int v = nums[i];
+//            int end = nums[j];
+//            if (v == val) {
+//                if (end != val) {
+//                    nums[i] = end;
+//                    nums[j] = val;
+//                    i++;
+//                    j--;
+//                    r++;
+//                } else {
+//                    j--;
+//                    r++;
+//                }
+//            } else {
+//                i++;
+//            }
+//        }
+//        return r;
+//    }
+
 }
